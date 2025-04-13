@@ -58,6 +58,8 @@ def show_camera():
         try:
             window_handle = cv2.namedWindow(window_title, cv2.WINDOW_AUTOSIZE)
 
+            history = []
+
             drop_frame_counter = 0
             while True:
                 ret_val, frame = video_capture.read()
@@ -81,8 +83,16 @@ def show_camera():
                 if circles is not None:
                     circles = np.uint16(np.around(circles))
                     for i,c in enumerate(circles[0,:]):
+                        if i == 0:
+                            history.append((c[0], c[1]))
+                            if len(history) > 20:
+                                history.pop(0)
+
                         color = (0,255,0) if i == 0 else (255,0,0)
                         cv2.circle(display_img, (c[0], c[1]), c[2], color, 2)
+
+                for p in history:
+                    cv2.circle(display_img, p, 0, (0,0,255), 2)
 
                 # Check to see if the user closed the window
                 # Under GTK+ (Jetson Default), WND_PROP_VISIBLE does not work correctly. Under Qt it does
