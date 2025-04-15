@@ -49,11 +49,16 @@ param2 = 30
 minRadius = 10
 maxRadius = 20
 
+# TODO: is camera actually running at 120fps? profile
+# TODO: camera supports 1280x720 @ 120fps - build cv2 with CUDA
+skip_frames = True
+div_ratio = 2
+
 def show_camera():
     window_title = "CSI Camera"
 
     # To flip the image, modify the flip_method parameter (0 and 2 are the most common)
-    video_capture = cv2.VideoCapture(gstreamer_pipeline(flip_method=2,framerate=60,capture_width=640,capture_height=360,display_width=640,display_height=360), cv2.CAP_GSTREAMER)
+    video_capture = cv2.VideoCapture(gstreamer_pipeline(flip_method=2,framerate=120,capture_width=640,capture_height=360,display_width=640,display_height=360), cv2.CAP_GSTREAMER)
     if video_capture.isOpened():
         try:
             window_handle = cv2.namedWindow(window_title, cv2.WINDOW_AUTOSIZE)
@@ -64,11 +69,12 @@ def show_camera():
             while True:
                 ret_val, frame = video_capture.read()
 
-                #process every 2nd frame: 60fps -> 30fps
-                if(drop_frame_counter < 1):
-                    drop_frame_counter = drop_frame_counter + 1
-                    continue
-                drop_frame_counter = 0
+                #process every 2nd frame: 120fps -> 60fps
+                if(skip_frames):
+                    if(drop_frame_counter < div_ratio-1):
+                        drop_frame_counter = drop_frame_counter + 1
+                        continue
+                    drop_frame_counter = 0
 
                 gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
                 blur = cv2.medianBlur(gray, 5)
