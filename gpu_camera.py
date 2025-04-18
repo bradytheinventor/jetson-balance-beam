@@ -71,7 +71,7 @@ def show_camera():
             gpu_frame = cv2.cuda_GpuMat(frame.shape[:-1][::-1],cv2.CV_8UC3)
             gpu_gray = cv2.cuda_GpuMat(frame.shape[:-1][::-1],cv2.CV_8UC1)
             gpu_blur = cv2.cuda_GpuMat(frame.shape[:-1][::-1],cv2.CV_8UC1)
-            gpu_circles = cv2.cuda_GpuMat() #1, 100*3, cv2.CV_32FC1
+            gpu_circles = cv2.cuda_GpuMat() #1, 100*3, cv2.CV_32FC1      (3,100),cv2.CV_32FC1
 
             drop_frame_counter = 0
             while True:
