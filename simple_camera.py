@@ -44,8 +44,8 @@ def gstreamer_pipeline(
 
 
 minDist = 10
-param1 = 50
-param2 = 30
+param1 = 100 # canny upper threshold. lower threshold is param1/2
+param2 = 10 # hough accumulator something. smaller = more forgiving
 minRadius = 10
 maxRadius = 20
 
@@ -75,12 +75,36 @@ def show_camera():
                         continue
                     drop_frame_counter = 0
 
-                gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)
+                # actually BGR, but we want to swap blue/red so the red hue is away from 0/360 transition
+                # makes masking easier
+                hsv = cv2.cvtColor(frame, cv2.COLOR_RGB2HSV)
+
+                # boost saturation. kind of boosts sensor noise too. not great
+                """
+                hsv = np.float32(hsv)
+                hsv[:,:,1] = np.clip(hsv[:,:,1] * 1, 0, 255)
+                hsv = np.uint8(hsv)
+                """
+
+                # hsv filter out anything that's not red
+                # TODO: robust against lighting changes?
+                lower = np.array([110,150,0])
+                upper = np.array([130,255,255])
+                mask = cv2.inRange(hsv, lower, upper)
+                hsv_masked = cv2.bitwise_and(hsv, hsv, mask=mask)
+                masked = cv2.cvtColor(hsv_masked, cv2.COLOR_HSV2RGB)
+
+                gray = cv2.cvtColor(masked, cv2.COLOR_BGR2GRAY)
+                #gray = cv2.equalizeHist(gray)
+
                 blur = cv2.medianBlur(gray, 5)
-                #canny = cv2.Canny(blur, 75, 200)
+                #blur = cv2.bilateralFilter(gray, 5, 100, 100)
+
+                #canny = cv2.Canny(blur, param1, param1/2)
                 circles = cv2.HoughCircles(blur, cv2.HOUGH_GRADIENT, 1.3, minDist, param1=param1, param2=param2, minRadius=minRadius, maxRadius=maxRadius)
 
-                #display_img = cv2.cvtColor(blur, cv2.COLOR_GRAY2RGB)
+                #display_img = cv2.cvtColor(canny, cv2.COLOR_GRAY2RGB)
+                #display_img = masked
                 display_img = frame
 
                 if circles is not None:
