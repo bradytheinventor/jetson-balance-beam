@@ -87,7 +87,7 @@ def show_camera():
                 """
 
                 # hsv filter out anything that's not red
-                lower = np.array([115,100,0])
+                lower = np.array([115,150,0])
                 upper = np.array([130,255,255])
                 mask = cv2.inRange(hsv, lower, upper)
                 hsv_masked = cv2.bitwise_and(hsv, hsv, mask=mask)
