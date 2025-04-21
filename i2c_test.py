@@ -1,24 +1,25 @@
 import smbus
 import time
 
+#TODO: atmega328p supports fast mode @ 8MHz. how to change SCL?
+
 # Arduino is 0x29 on Bus 1 (pins 3,5)
+# i2cdetect -y -r 1
 bus = smbus.SMBus(1)
 addr = 0x29
 
-#on = list("ON\n".encode())
-#off = list("OFF\n".encode())
-
-time.sleep(1)
+def write(msg: str) -> None:
+    for c in list(msg):
+        bus.write_byte(addr, ord(c))
 
 try:
     while(1):
-        bus.write_byte(addr, ord('N'))
-        #bus.write_i2c_block_data(addr, 0x0, on)
-        time.sleep(0.01)
-        bus.write_byte(addr, ord('F'))
-        #bus.write_i2c_block_data(addr, 0x0, off)
-        time.sleep(0.01)
+        write("ON\n")
+        time.sleep(0.05)
+        write("OFF\n")
+        time.sleep(0.05)
 finally:
+    bus.close()
     print("Quitting...")
 
 print("Done.")
