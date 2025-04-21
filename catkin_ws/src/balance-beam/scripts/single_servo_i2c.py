@@ -8,9 +8,16 @@ from std_msgs.msg import Float64
 bus = smbus.SMBus(1)
 addr = 0x29
 
-mid_us = 1590
+# for the standalone servo with the clip attached
+#mid_us = 1590
+
+# balance beam servo
+mid_us = 1450
+
 min_us = mid_us-200
 max_us = mid_us+200
+
+
 
 def write(msg: str) -> None:
     for c in list(msg):
@@ -21,8 +28,8 @@ def write_uint16(i: int) -> None:
     bus.write_i2c_block_data(addr, bytes[0], bytes[1:])
 
 def callback(data):
-    data_norm = (data.data+1.0) / 2 # 0.0 - 1.0
-    data_us = (data_norm*(max_us-min_us)) + min_us # min_us - max_us
+    # 0.0 : 1.0 -> min_us : max_us
+    data_us = (data.data*(max_us-min_us)) + min_us
     data_us = int(data_us)
     write_uint16(data_us)
 
