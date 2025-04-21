@@ -4,7 +4,7 @@ from std_msgs.msg import Float64
 
 def talker():
     pub = rospy.Publisher('test_topic', Float64, queue_size=10)
-    rospy.init_node('pub', anonymous=True)
+    rospy.init_node('sweep', anonymous=True)
     rate = rospy.Rate(10)
 
     i = 0.5
