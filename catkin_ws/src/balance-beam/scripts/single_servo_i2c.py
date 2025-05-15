@@ -12,7 +12,8 @@ addr = 0x29
 #mid_us = 1590
 
 # balance beam servo
-mid_us = 1450
+# mid_us = 1450
+mid_us = 1400
 
 min_us = mid_us-200
 max_us = mid_us+200
