@@ -4,7 +4,7 @@ from std_msgs.msg import Float64
 
 def talker():
     pub = rospy.Publisher('test_topic', Float64, queue_size=10)
-    rospy.init_node('sweep', anonymous=True)
+    rospy.init_node('sweep', anonymous=False)
     rate = rospy.Rate(10)
 
     i = 0.5
@@ -13,7 +13,7 @@ def talker():
     while not rospy.is_shutdown():
         rospy.loginfo(f'Sent: {i}')
         pub.publish(i)
-        
+
         i = i+step
         if i >= 1.0:
             i = 1.0
